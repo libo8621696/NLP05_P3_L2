@@ -50,7 +50,8 @@ def train_model(model, vocab, params, checkpoint_manager):
             print('Saving checkpoint for epoch {} at {}'.format(epoch + 1,
                                                                 ckpt_save_path))
 
-        valid_loss = evaluate(model, val_dataset, val_steps_per_epoch, pad_index)
+        valid_loss = evaluate(model, val_dataset, val_steps_per_epoch,
+                              loss_func=partial(loss_function, pad_index=pad_index))
 
         print('Epoch {} Loss {:.4f}; val Loss {:.4f}'.format(
             epoch + 1, total_loss / train_steps_per_epoch, valid_loss)
@@ -96,11 +97,12 @@ def train_step(model, enc_inp, dec_target, enc_hidden, loss_function=None, optim
         return batch_loss
 
 
-def evaluate(model, val_dataset, val_steps_per_epoch):
+def evaluate(model, val_dataset, val_steps_per_epoch, loss_func):
     print('Starting evaluate ...')
     total_loss = 0.
     enc_hidden = model.encoder.initialize_hidden_state()
     for (batch, (inputs, target)) in enumerate(val_dataset.take(val_steps_per_epoch), start=1):
-        batch_loss = train_step(model, inputs, target, enc_hidden, mode='val')
+        batch_loss = train_step(model, inputs, target, enc_hidden,
+                                loss_function=loss_func, mode='val')
         total_loss += batch_loss
     return total_loss / val_steps_per_epoch

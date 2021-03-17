@@ -11,15 +11,16 @@ def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, sample_su
                                     max_enc_len, max_dec_len)
     val_X, val_Y = load_dataset(config.test_x_path, config.test_y_path,
                                 max_enc_len, max_dec_len)
-    print(f'total {len(train_Y)} examples ...')
     if sample_sum:
         train_X = train_X[:sample_sum]
         train_Y = train_Y[:sample_sum]
+    print(f'total {len(train_Y)} examples ...')
     train_dataset = tf.data.Dataset.from_tensor_slices((train_X, train_Y)).shuffle(len(train_X),
                                                                                    reshuffle_each_iteration=True)
     val_dataset = tf.data.Dataset.from_tensor_slices((val_X, val_Y)).shuffle(len(val_X),
                                                                              reshuffle_each_iteration=True)
-    train_dataset = train_dataset.batch(batch_size, drop_remainder=True)
+    # train_dataset = train_dataset.batch(batch_size, drop_remainder=True)
+    train_dataset = train_dataset.batch(batch_size)
     val_dataset = val_dataset.batch(batch_size, drop_remainder=True)
     train_steps_per_epoch = len(train_X) // batch_size
     val_steps_per_epoch = len(val_X) // batch_size
