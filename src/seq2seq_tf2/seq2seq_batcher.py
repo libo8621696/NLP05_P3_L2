@@ -29,8 +29,8 @@ def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, sample_su
 
 def beam_test_batch_generator(beam_size, max_enc_len=200, max_dec_len=50):
     # 加载数据集
-    test_X, test_Y = load_dataset(config.test_x_path, config.test_y_path,
-                                  max_enc_len, max_dec_len)
+    test_X, _ = load_dataset(config.test_x_path, config.test_y_path,
+                             max_enc_len, max_dec_len)
     for row in test_X:
         beam_search_data = tf.convert_to_tensor([row for i in range(beam_size)])
         yield beam_search_data

@@ -38,14 +38,16 @@ def test(params):
     print("Model restored")
 
     if params['greedy_decode']:
-        predict_result(model, params, vocab, params['result_save_path'])
+        print('Using greedy search to decoding ...')
+        predict_result(model, params, vocab)
     else:
+        print('Using beam search to decoding ...')
         b = beam_test_batch_generator(params["beam_size"])
         results = []
         for batch in b:
             best_hyp = beam_decode(model, batch, vocab, params)
             results.append(best_hyp.abstract)
-        get_rouge(results, params['result_save_path'])
+        get_rouge(results)
         print('save result to :{}'.format(params['result_save_path']))
 
 
@@ -63,11 +65,15 @@ def get_rouge(results):
     seg_test_report = pd.read_csv(test_seg_path).iloc[:, 5].tolist()
     rouge_scores = Rouge().get_scores(results, seg_test_report, avg=True)
     print_rouge = json.dumps(rouge_scores, indent=2)
+    print('*' * 8 + ' rouge score ' + '*' * 8)
     print(print_rouge)
 
 
 if __name__ == '__main__':
     # 获得参数
+    import os
+    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
     params = get_params()
+    params['greedy_decode'] = True
     # 获得参数
     test(params)
