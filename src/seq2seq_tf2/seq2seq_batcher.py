@@ -19,8 +19,7 @@ def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, sample_su
                                                                                    reshuffle_each_iteration=True)
     val_dataset = tf.data.Dataset.from_tensor_slices((val_X, val_Y)).shuffle(len(val_X),
                                                                              reshuffle_each_iteration=True)
-    # train_dataset = train_dataset.batch(batch_size, drop_remainder=True)
-    train_dataset = train_dataset.batch(batch_size)
+    train_dataset = train_dataset.batch(batch_size, drop_remainder=True)
     val_dataset = val_dataset.batch(batch_size, drop_remainder=True)
     train_steps_per_epoch = len(train_X) // batch_size
     val_steps_per_epoch = len(val_X) // batch_size

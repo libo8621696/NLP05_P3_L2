@@ -61,7 +61,7 @@ class PGN(tf.keras.Model):
             attention_weights, p_gen, coverage = self.call_one_step(dec_input[:, t],
                                                                     dec_hidden,
                                                                     enc_output,
-                                                                    enc_pad_mask[:, t],
+                                                                    enc_pad_mask,
                                                                     use_coverage,
                                                                     coverage)
             coverages.append(tf.squeeze(coverage, axis=-1))

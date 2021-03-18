@@ -47,7 +47,7 @@ def train_model(model, train_dataset, val_dataset, params, checkpoint_manager):
             total_loss += batch_loss
             total_log_loss += log_loss
             total_cov_loss += cov_loss
-            if step % 1 == 0:
+            if step % 50 == 0:
                 if params['use_coverage']:
 
                     print('Epoch {} Batch {} avg_loss {:.4f} log_loss {:.4f} cov_loss {:.4f}'.format(epoch + 1,
@@ -69,7 +69,7 @@ def train_model(model, train_dataset, val_dataset, params, checkpoint_manager):
         if val_total_loss < best_loss:
             best_loss = val_total_loss
             ckpt_save_path = checkpoint_manager.save()
-            print('Saving checkpoint for epoch {} at {} ,best valid loss {}'.format(epoch + 1, ckpt_save_path,
+            print('Saving checkpoint for epoch {} at {}, best valid loss {}'.format(epoch + 1, ckpt_save_path,
                                                                                     best_loss))
 
 

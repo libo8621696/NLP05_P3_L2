@@ -112,7 +112,7 @@ def example_generator(params, vocab, max_enc_len, max_dec_len, mode, batch_size)
     if mode != "test":
         dataset_1 = tf.data.TextLineDataset(params[f"{mode}_seg_x_dir"])
         dataset_2 = tf.data.TextLineDataset(params[f"{mode}_seg_y_dir"])
-        train_dataset = tf.data.Dataset.zip((dataset_1, dataset_2))
+        train_dataset = tf.data.Dataset.zip((dataset_1, dataset_2)).take(1000)
 
         # train_dataset = train_dataset.shuffle(10, reshuffle_each_iteration=True).repeat()
         for raw_record in train_dataset:
@@ -168,7 +168,7 @@ def example_generator(params, vocab, max_enc_len, max_dec_len, mode, batch_size)
             }
             yield output
     else:
-        train_dataset = tf.data.TextLineDataset(params["test_seg_x_dir"])
+        train_dataset = tf.data.TextLineDataset(params["val_seg_x_dir"]).take(100)
         for raw_record in train_dataset:
             article = raw_record.numpy().decode("utf-8")
             article_words = article.split()[:max_enc_len]

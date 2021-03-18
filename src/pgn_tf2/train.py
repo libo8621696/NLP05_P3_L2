@@ -59,7 +59,7 @@ def train(params):
 if __name__ == '__main__':
     import os
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '1'
+    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     # 获得参数m
     params = get_params()
     params['mode'] = 'train'
@@ -70,7 +70,6 @@ if __name__ == '__main__':
     params['max_enc_len'] = 250
     params['max_dec_len'] = 45
     params['batch_size'] = 16
-    # params['max_vocab_size'] = 20000
     params['vocab_size'] = 30000
     params['attn_units'] = 20
     params['eps'] = 1e-12
