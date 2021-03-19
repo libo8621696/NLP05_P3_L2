@@ -45,6 +45,7 @@ def masked_attention(enc_padding_mask, attn_dist):
     attn_dist *= mask  # apply mask
     masked_sums = tf.reduce_sum(attn_dist, axis=1)  # shape (batch_size)
     attn_dist = attn_dist / tf.reshape(masked_sums + 1e-12, [-1, 1])  # re-normalize
+    # attn_dist = attn_dist / tf.reshape(masked_sums, [-1, 1])  # re-normalize
     attn_dist = tf.expand_dims(attn_dist, axis=2)
     return attn_dist
 
