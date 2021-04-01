@@ -45,7 +45,7 @@ def test(params):
 
 def get_rouge(results):
     # 读取结果
-    seg_test_report = pd.read_csv(test_seg_path).iloc[:100, 5].tolist()
+    seg_test_report = pd.read_csv(test_seg_path).iloc[:, 5].tolist()
     rouge_scores = Rouge().get_scores(results, seg_test_report, avg=True)
     print_rouge = json.dumps(rouge_scores, indent=2)
     print('*' * 8 + ' rouge score ' + '*' * 8)
@@ -74,7 +74,7 @@ def predict_result(model, params, vocab, result_save_path):
 
 def save_predict_result(results, result_save_path):
     # 读取结果
-    test_df = pd.read_csv(test_data_path).iloc[:100]
+    test_df = pd.read_csv(test_data_path)
     # 填充结果
     test_df['Prediction'] = results[:len(test_df['QID'])]
     # 提取ID和预测结果两列
@@ -91,8 +91,8 @@ if __name__ == '__main__':
     params = get_params()
 
     # beam search
-    params['batch_size'] = 3
-    params['beam_size'] = 3
+    params['batch_size'] = 4
+    params['beam_size'] = 4
     params['mode'] = 'test'
     params['decode_mode'] = 'beam'
     params['pointer_gen'] = True

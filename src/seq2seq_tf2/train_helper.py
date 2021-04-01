@@ -15,15 +15,10 @@ def train_model(model, vocab, params, checkpoint_manager):
     # 获取vocab大小
     params['vocab_size'] = vocab.count
 
-    optimizer = tf.keras.optimizers.Adam(name='Adam', learning_rate=0.01)
-
-    # 训练
-    # @tf.function(input_signature=(tf.TensorSpec(shape=[params["batch_size"], None], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_dec_len"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_dec_len"]], dtype=tf.int32)))
+    optimizer = tf.keras.optimizers.Adam(name='Adam', learning_rate=params['learning_rate'])
 
     train_dataset, val_dataset, train_steps_per_epoch, val_steps_per_epoch = train_batch_generator(
-        params['batch_size'], params['max_enc_len'], params['max_dec_len']
+        params['batch_size'], params['max_enc_len'], params['max_dec_len'], params['buffer_size']
     )
 
     for epoch in range(epochs):
@@ -72,8 +67,6 @@ def loss_function(real, pred, pad_index):
 
 def train_step(model, enc_inp, dec_target, enc_hidden, loss_function=None, optimizer=None, mode='train'):
     with tf.GradientTape() as tape:
-        # enc_inp = enc_inp['enc_input']
-        # dec_target = dec_target['dec_target']
 
         enc_output, enc_hidden = model.encoder(enc_inp, enc_hidden)
         # 第一个隐藏层输入

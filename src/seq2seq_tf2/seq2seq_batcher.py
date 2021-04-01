@@ -5,7 +5,7 @@ import tensorflow as tf
 from src.utils import config
 
 
-def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, sample_sum=None):
+def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, buffer_size=5, sample_sum=None):
     # 加载数据集
     train_X, train_Y = load_dataset(config.train_x_path, config.train_y_path,
                                     max_enc_len, max_dec_len)
@@ -19,8 +19,8 @@ def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, sample_su
                                                                                    reshuffle_each_iteration=True)
     val_dataset = tf.data.Dataset.from_tensor_slices((val_X, val_Y)).shuffle(len(val_X),
                                                                              reshuffle_each_iteration=True)
-    train_dataset = train_dataset.batch(batch_size, drop_remainder=True)
-    val_dataset = val_dataset.batch(batch_size, drop_remainder=True)
+    train_dataset = train_dataset.batch(batch_size, drop_remainder=True).prefetch(buffer_size)
+    val_dataset = val_dataset.batch(batch_size, drop_remainder=True).prefetch(buffer_size)
     train_steps_per_epoch = len(train_X) // batch_size
     val_steps_per_epoch = len(val_X) // batch_size
     return train_dataset, val_dataset, train_steps_per_epoch, val_steps_per_epoch

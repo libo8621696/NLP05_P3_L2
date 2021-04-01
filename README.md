@@ -25,7 +25,10 @@
 训练步骤:
 1. 拷贝数据集到data路径下
 2. 运行utils\data_loader.py可以一键完成 预处理数据 构建数据集
-3. 训练模型 运行seq2seq_tf2\train.py脚本
+3. 训练模型 运行seq2seq_tf2\train.py脚本，进入 summary 目录，运行如下命令:
+    ```bash
+    $ python -m src.seq2seq_tf2.train
+    ```
 
 
 预测步骤：
