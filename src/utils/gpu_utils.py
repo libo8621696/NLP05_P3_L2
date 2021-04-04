@@ -6,7 +6,7 @@ def config_gpu(use_cpu=False, gpu_memory=6):
     if use_cpu:
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
     else:
-        os.environ['CUDA_VISIBLE_DEVICES'] = '3'
+        os.environ['CUDA_VISIBLE_DEVICES'] = '1'
         gpus = tf.config.experimental.list_physical_devices('GPU')
         tf.config.experimental.set_memory_growth(gpus[0], enable=True)
         if gpus:

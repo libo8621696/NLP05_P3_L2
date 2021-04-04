@@ -3,6 +3,7 @@
 from src.utils.data_loader import load_dataset
 import tensorflow as tf
 from src.utils import config
+from tqdm import tqdm
 
 
 def train_batch_generator(batch_size, max_enc_len=200, max_dec_len=50, buffer_size=5, sample_sum=None):
@@ -30,7 +31,8 @@ def beam_test_batch_generator(beam_size, max_enc_len=200, max_dec_len=50):
     # 加载数据集
     test_X, _ = load_dataset(config.test_x_path, config.test_y_path,
                              max_enc_len, max_dec_len)
-    for row in test_X:
+    print(f'total {len(test_X)} test examples ...')
+    for row in tqdm(test_X, total=len(test_X), desc='Beam Search'):
         beam_search_data = tf.convert_to_tensor([row for i in range(beam_size)])
         yield beam_search_data
 

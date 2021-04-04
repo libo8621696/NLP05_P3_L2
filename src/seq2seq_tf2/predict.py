@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 # Created by LuoJie at 12/12/19
+import os
 import tensorflow as tf
 from src.seq2seq_tf2.seq2seq_batcher import beam_test_batch_generator
 from src.seq2seq_tf2.seq2seq_model import Seq2Seq
@@ -75,9 +76,8 @@ def get_rouge(results):
 
 if __name__ == '__main__':
     # 获得参数
-    import os
-    os.environ['CUDA_VISIBLE_DEVICES'] = '3'
     params = get_params()
-    params['greedy_decode'] = True
+    # params['greedy_decode'] = True
+    params['beam_size'] = params['batch_size'] = 4
     # 获得参数
     test(params)

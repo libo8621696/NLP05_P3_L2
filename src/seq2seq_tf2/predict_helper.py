@@ -206,6 +206,7 @@ def beam_decode(model, batch, vocab, params):
             if h.latest_token == stop_index:
                 # 长度符合预期,遇到句尾,添加到结果集
                 if steps >= params['min_dec_steps']:
+                    h.tokens = h.tokens[1: -1]
                     results.append(h)
             else:
                 # 未到结束 ,添加到假设集
@@ -224,6 +225,7 @@ def beam_decode(model, batch, vocab, params):
     print_top_k(hyps_sorted, 3, vocab, batch)
 
     best_hyp = hyps_sorted[0]
+    # TODO 去掉 start stop
     best_hyp.abstract = " ".join([vocab.id_to_word(index) for index in best_hyp.tokens])
     # best_hyp.text = batch[0]["article"].numpy()[0].decode()
     return best_hyp
