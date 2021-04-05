@@ -12,7 +12,7 @@ from src.utils.config import (
     batch_size,
     save_result_dir,
     epochs,
-    seq2seq_checkpoint_dir,
+    pgn_checkpoint_dir,
     vocab_size
 )
 
@@ -27,7 +27,7 @@ def get_params():
     parser.add_argument("--buffer_size", default=1000, help="batch size", type=int)
     parser.add_argument("--epochs", default=epochs, help="train epochs", type=int)
     parser.add_argument("--vocab_path", default=vocab_path, help="vocab path", type=str)
-    parser.add_argument("--learning_rate", default=0.001, help="Learning rate", type=float)
+    parser.add_argument("--learning_rate", default=0.01, help="Learning rate", type=float)
     parser.add_argument("--adagrad_init_acc", default=0.1,
                         help="Adagrad optimizer initial accumulator value. "
                              "Please refer to the Adagrad optimizer API documentation "
@@ -62,7 +62,7 @@ def get_params():
     parser.add_argument("--val_seg_y_dir", default=val_y_seg_path, help="val_seg_y_dir", type=str)
     parser.add_argument("--test_seg_x_dir", default=val_x_seg_path, help="test_seg_x_dir", type=str)
 
-    parser.add_argument("--checkpoint_dir", default=seq2seq_checkpoint_dir,
+    parser.add_argument("--checkpoint_dir", default=pgn_checkpoint_dir,
                         help="checkpoint_dir",
                         type=str)
 

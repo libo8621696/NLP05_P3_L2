@@ -59,7 +59,7 @@ reverse_vocab_path = os.path.join(root, 'data', 'wv', 'reverstest_save_dire_voca
 wv_train_epochs = 5
 
 # 模型保存文件夹
-pgn_checkpoint_dir = os.path.join(root, 'data', 'checkpoints', 'training_checkpoints_pgn_cov_not_clean')
+pgn_checkpoint_dir = os.path.join(root, 'data', 'checkpoints', 'training_checkpoints_pgn')
 
 seq2seq_checkpoint_dir = os.path.join(root, 'data', 'checkpoints', 'training_checkpoints_seq2seq')
 transformer_checkpoint_dir = os.path.join(root, 'data', 'checkpoints', 'training_checkpoints_pgn_tfs')
@@ -77,6 +77,6 @@ sample_total = 82871
 batch_size = 32
 # batch_size = 4
 
-epochs = 6
+epochs = 10
 
 vocab_size = 30000

@@ -302,7 +302,7 @@ def batcher(vocab, params):
                               params["max_dec_len"],
                               params["batch_size"],
                               params["mode"])
-
+    dataset = dataset.prefetch(params['buffer_size'])
     steps_per_epoch = get_steps_per_epoch(params)
     return dataset, steps_per_epoch
 
