@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 # Created by LuoJie at 12/7/19
-from src.utils.data_loader import load_dataset
+from src.build_data import load_dataset
 import tensorflow as tf
 from src.utils import config
 from tqdm import tqdm

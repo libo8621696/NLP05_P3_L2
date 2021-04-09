@@ -39,10 +39,11 @@ class Decoder(tf.keras.layers.Layer):
         self.dec_layers = [DecoderLayer(d_model, num_heads, dff, rate) for _ in range(num_layers)]
         self.dropout = tf.keras.layers.Dropout(rate)
 
-        self.Wh = tf.keras.layers.Dense(1)
-        self.Ws = tf.keras.layers.Dense(1)
-        self.Wx = tf.keras.layers.Dense(1)
-        self.V = tf.keras.layers.Dense(1)
+        # self.Wh = tf.keras.layers.Dense(1)
+        # self.Ws = tf.keras.layers.Dense(1)
+        # self.Wx = tf.keras.layers.Dense(1)
+        # self.V = tf.keras.layers.Dense(1)
+        self.W_gen = tf.keras.layers.Dense(1)
 
     def call(self, x, enc_output, training,
              look_ahead_mask, padding_mask):
@@ -73,10 +74,12 @@ class Decoder(tf.keras.layers.Layer):
             tf.shape(context)[0], tf.shape(context)[1], self.d_model))  # (batch_size, target_seq_len, d_model)
 
         # P_gens computing
-        a = self.Wx(x)
-        b = self.Ws(out)
-        c = self.Wh(context)
-        p_gens = tf.sigmoid(self.V(a + b + c))
+        # a = self.Wx(x)
+        # b = self.Ws(out)
+        # c = self.Wh(context)
+        # p_gens = tf.sigmoid(self.V(a + b + c))
+        gen_state = tf.concat([x, out, context], axis=-1)
+        p_gens = tf.sigmoid(self.W_gen(gen_state))
         # print('out is ', out)
         # print('attention_weights is ', attention_weights)
         # print('p_gens is ', p_gens)
@@ -92,6 +95,7 @@ class PGN_TRANSFORMER(tf.keras.Model):
         self.vocab_size = params["vocab_size"]
         self.num_heads = params["num_heads"]
 
+        # TODO 加载词向量，通过线性层从embedding size 变换到 d_model
         self.embedding = Embedding(params["vocab_size"],
                                    params["d_model"])
         self.encoder = Encoder(

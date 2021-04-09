@@ -7,7 +7,7 @@ sys.path.append(BASE_DIR)
 
 from src.utils.config import (
     train_x_seg_path, train_y_seg_path, val_x_seg_path, val_y_seg_path, test_x_seg_path,
-    checkpoint_dir, epochs, vocab_path, transformer_checkpoint_dir, save_result_dir
+    epochs, vocab_path, transformer_checkpoint_dir, save_result_dir
 )
 
 import tensorflow as tf
@@ -31,9 +31,10 @@ def main():
     parser.add_argument("--max_dec_len", default=40, help="Decoder input max sequence length", type=int)
     parser.add_argument("--max_dec_steps", default=100,
                         help="maximum number of words of the predicted abstract", type=int)
-    parser.add_argument("--min_dec_steps", default=30,
+    parser.add_argument("--min_dec_steps", default=5,
                         help="Minimum number of words of the predicted abstract", type=int)
-    parser.add_argument("--batch_size", default=64, help="batch size", type=int)
+    parser.add_argument("--batch_size", default=32, help="batch size", type=int)
+    parser.add_argument("--buffer_size", default=10, help="buffer size", type=int)
     parser.add_argument("--beam_size", default=3,
                         help="beam size for beam search decoding (must be equal to batch size in decode mode)",
                         type=int)
@@ -44,12 +45,13 @@ def main():
     parser.add_argument("--attn_units", default=256,
                         help="[context vector, decoder state, decoder input] feedforward result dimension - "
                              "this result is used to compute the attention weights", type=int)
-    parser.add_argument("--learning_rate", default=0.001, help="Learning rate", type=float)
+    parser.add_argument("--learning_rate", default=0.0005, help="Learning rate", type=float)
     parser.add_argument("--adagrad_init_acc", default=0.1,
                         help="Adagrad optimizer initial accumulator value. Please refer to the Adagrad optimizer "
                              "API documentation on tensorflow site for more details.", type=float)
     parser.add_argument("--max_grad_norm", default=0.8, help="Gradient norm above which gradients must be clipped",
                         type=float)
+    parser.add_argument('--eps', default=1e-12, type=float)
     parser.add_argument('--cov_loss_wt', default=0.5, help='Weight of coverage loss (lambda in the paper).'
 
                                                            ' If zero, then no incentive to minimize coverage loss.',
@@ -63,11 +65,9 @@ def main():
     parser.add_argument("--test_seg_x_dir", default=test_x_seg_path, help="train_seg_x_dir", type=str)
     parser.add_argument("--test_save_dir", default=save_result_dir, help="train_seg_x_dir", type=str)
 
-    parser.add_argument("--checkpoint_dir", default=checkpoint_dir,
+    parser.add_argument("--checkpoint_dir", default=transformer_checkpoint_dir,
                         help="checkpoint_dir",
                         type=str)
-    # path
-    # /ckpt/checkpoint/checkpoint
     parser.add_argument("--transformer_model_dir", default=transformer_checkpoint_dir, help="Model folder")
     parser.add_argument("--model_path", help="Path to a specific model", default="", type=str)
     parser.add_argument("--log_file", help="File in which to redirect console outputs", default="", type=str)
@@ -83,7 +83,7 @@ def main():
     # transformer
     parser.add_argument('--d_model', default=512, type=int,
                         help="hidden dimension of encoder/decoder")
-    parser.add_argument('--num_blocks', default=3, type=int,
+    parser.add_argument('--num_blocks', default=6, type=int,
                         help="number of encoder/decoder blocks")
     parser.add_argument('--num_heads', default=8, type=int,
                         help="number of attention heads")
@@ -92,7 +92,7 @@ def main():
     parser.add_argument('--dropout_rate', default=0.1, type=float)
 
     # mode
-    parser.add_argument("--mode", default='train', help="training, eval or test options")
+    parser.add_argument("--mode", default='test', help="training, eval or test options")
     parser.add_argument("--model", default='PGN', help="which model to be slected")
     parser.add_argument("--pointer_gen", default=True, help="training, eval or test options")
     parser.add_argument("--is_coverage", default=True, help="is_coverage")
@@ -103,7 +103,6 @@ def main():
     params = vars(args)
 
     gpus = tf.config.experimental.list_physical_devices(device_type='GPU')
-    # print('grus is ', gpus)
     if gpus:
         tf.config.experimental.set_visible_devices(devices=gpus[0], device_type='GPU')
 
@@ -111,14 +110,11 @@ def main():
         params["training"] = True
         train(params)
 
-    # elif params["mode"] == "eval":
-    #     evaluate(params)
-
     elif params["mode"] == "test":
-        params["batch_size"] = params["beam_size"] = 3
+        params["batch_size"] = params["beam_size"] = 32
         params["training"] = False
-        # params["decode_mode"] = 'greedy'
-        params["decode_mode"] = 'beam'
+        params["decode_mode"] = 'greedy'
+        # params["decode_mode"] = 'beam'
         params["print_info"] = True
 
         predict_result(params)

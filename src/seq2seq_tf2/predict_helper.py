@@ -225,7 +225,6 @@ def beam_decode(model, batch, vocab, params):
     print_top_k(hyps_sorted, 3, vocab, batch)
 
     best_hyp = hyps_sorted[0]
-    # TODO 去掉 start stop
     best_hyp.abstract = " ".join([vocab.id_to_word(index) for index in best_hyp.tokens])
     # best_hyp.text = batch[0]["article"].numpy()[0].decode()
     return best_hyp

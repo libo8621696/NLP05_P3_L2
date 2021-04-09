@@ -8,8 +8,9 @@ loss_object = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False, r
 def calc_loss(real, pred, dec_mask, attentions, cov_loss_wt, eps):
     log_loss = pgn_log_loss_function(real, pred, dec_mask, eps)
     # log_loss = _log_loss(real, pred, dec_mask)
-    cov_loss = _coverage_loss(attentions, dec_mask)
-    return log_loss + cov_loss_wt * cov_loss, log_loss, cov_loss
+    # cov_loss = _coverage_loss(attentions, dec_mask)
+    # return log_loss + cov_loss_wt * cov_loss, log_loss, cov_loss
+    return log_loss, 0, 0
 
 
 def _log_loss(target, pred, dec_mask):
@@ -33,6 +34,7 @@ def pgn_log_loss_function(real, final_dists, padding_mask, eps):
     # This is fiddly; we use tf.gather_nd to pick out the probabilities of the gold target words
     loss_per_step = []  # will be list length max_dec_steps containing shape (batch_size)
     batch_nums = tf.range(0, limit=real.shape[0])  # shape (batch_size)
+    final_dists = tf.transpose(final_dists, perm=[1, 0, 2])
     for dec_step, dist in enumerate(final_dists):
         # The indices of the target words. shape (batch_size)
         targets = real[:, dec_step]
@@ -72,6 +74,7 @@ def _coverage_loss(attn_dists, padding_mask):
     Returns:
       coverage_loss: scalar
     """
+    attn_dists = tf.transpose(attn_dists, perm=[1, 0, 2])
     coverage = tf.zeros_like(attn_dists[0])  # shape (batch_size, attn_length). Initial coverage is zero.
     # Coverage loss per decoder time step. Will be list length max_dec_steps containing shape (batch_size).
     covlosses = []

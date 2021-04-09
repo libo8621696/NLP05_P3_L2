@@ -26,7 +26,6 @@ def train(params):
 
     # 构建模型
     print("Building the model ...")
-    # model = Seq2Seq(params)
     model = PGN(params)
 
     print("Creating the batcher ...")
@@ -65,8 +64,8 @@ if __name__ == '__main__':
     params['enc_units'] = 128
     params['dec_units'] = 256
     params['attn_units'] = 128
-    params['max_enc_len'] = 300
-    params['max_dec_len'] = 60
+    params['max_enc_len'] = 200
+    params['max_dec_len'] = 40
     params['batch_size'] = 16
     params['eps'] = 1e-12
 

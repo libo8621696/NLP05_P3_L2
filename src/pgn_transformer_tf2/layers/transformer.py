@@ -15,6 +15,15 @@ def create_look_ahead_mask(size):
     return mask  # (seq_len, seq_len)
 
 
+"""
+create_look_ahead_mask
+[[0., 1., 1., 1.],
+[0., 0., 1., 1.],
+[0., 0., 0., 1.],
+[0., 0., 0., 0.]]
+"""
+
+
 def scaled_dot_product_attention(q, k, v, mask):
     """计算注意力权重。
     q, k, v 必须具有匹配的前置维度。

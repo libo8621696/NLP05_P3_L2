@@ -14,15 +14,6 @@ def train_model(model, train_dataset, val_dataset, params, checkpoint_manager):
                                             clipnorm=params['max_grad_norm'],
                                             epsilon=params['eps'])
 
-    # @tf.function(input_signature=(tf.TensorSpec(shape=[params["batch_size"], params["dec_units"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_enc_len"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_enc_len"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[None], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_dec_len"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_dec_len"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_enc_len"]], dtype=tf.int32),
-    #                               tf.TensorSpec(shape=[params["batch_size"], params["max_dec_len"]], dtype=tf.int32)))
-
     best_loss = 10
     for epoch in range(epochs):
         start = time.time()
@@ -43,7 +34,7 @@ def train_model(model, train_dataset, val_dataset, params, checkpoint_manager):
                                                         enc_pad_mask=encoder_batch_data["encoder_pad_mask"],
                                                         dec_pad_mask=decoder_batch_data["decoder_pad_mask"],
                                                         params=params, optimizer=optimizer, mode='train')
-
+            step += 1
             total_loss += batch_loss
             total_log_loss += log_loss
             total_cov_loss += cov_loss
@@ -59,7 +50,6 @@ def train_model(model, train_dataset, val_dataset, params, checkpoint_manager):
                     print('Epoch {} Batch {} avg_loss {:.4f}'.format(epoch + 1,
                                                                      step,
                                                                      total_loss / step))
-            step += 1
 
         val_total_loss, val_total_cov_loss, val_total_log_loss = evaluate(model, val_dataset, params)
 

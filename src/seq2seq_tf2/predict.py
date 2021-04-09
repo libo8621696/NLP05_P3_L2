@@ -5,10 +5,10 @@ import tensorflow as tf
 from src.seq2seq_tf2.seq2seq_batcher import beam_test_batch_generator
 from src.seq2seq_tf2.seq2seq_model import Seq2Seq
 from src.seq2seq_tf2.predict_helper import beam_decode, greedy_decode
-from src.utils.config import seq2seq_checkpoint_dir, test_x_path, test_y_path, test_data_path, test_seg_path
+from src.utils.config import seq2seq_checkpoint_dir, test_x_path, test_y_path, test_seg_path
 from src.utils.gpu_utils import config_gpu
 from src.utils.params_utils import get_params
-from src.utils.data_loader import load_dataset
+from src.build_data import load_dataset
 from src.utils.wv_loader import Vocab
 import pandas as pd
 from rouge import Rouge
@@ -77,7 +77,7 @@ def get_rouge(results):
 if __name__ == '__main__':
     # 获得参数
     params = get_params()
-    # params['greedy_decode'] = True
-    params['beam_size'] = params['batch_size'] = 4
+    params['greedy_decode'] = True
+    # params['beam_size'] = params['batch_size'] = 4
     # 获得参数
     test(params)

@@ -323,17 +323,18 @@ def batch_greedy_decode(model, encoder_batch_data, vocab, params):
 
 def greedy_decode(model, dataset, vocab, params):
     # 存储结果
-    batch_size = params["batch_size"]
+    # batch_size = params["batch_size"]
     results = []
 
-    sample_size = 20000
+    # sample_size = 20000
     # batch 操作轮数 math.ceil向上取整 小数 +1
     # 因为最后一个batch可能不足一个batch size 大小 ,但是依然需要计算
-    steps_epoch = sample_size // batch_size + 1
+    # steps_epoch = sample_size // batch_size + 1
     # [0,steps_epoch)
     ds = iter(dataset)
-    for i in tqdm(range(steps_epoch)):
+    for i in tqdm(range(params['steps_per_epoch'])):
         enc_data, _ = next(ds)
-        results += batch_greedy_decode(model, enc_data, vocab, params)
-        print(results[0])
+        batch_results = batch_greedy_decode(model, enc_data, vocab, params)
+        print(batch_results[0])
+        results.extend(batch_results)
     return results

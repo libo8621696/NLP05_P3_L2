@@ -1,5 +1,6 @@
 import tensorflow as tf
 
+
 def calc_final_dist(_enc_batch_extend_vocab, vocab_dists, attn_dists, p_gens, batch_oov_len, vocab_size, batch_size):
     """
     Calculate the final distribution, for the pointer-generator model
@@ -12,7 +13,7 @@ def calc_final_dist(_enc_batch_extend_vocab, vocab_dists, attn_dists, p_gens, ba
     """
     # Multiply vocab dists by p_gen and attention dists by (1-p_gen)
     vocab_dists = [p_gen * dist for (p_gen, dist) in zip(p_gens, vocab_dists)]
-    attn_dists = [(1-p_gen) * dist for (p_gen, dist) in zip(p_gens, attn_dists)]
+    attn_dists = [(1 - p_gen) * dist for (p_gen, dist) in zip(p_gens, attn_dists)]
 
     # Concatenate some zeros to each vocabulary dist, to hold the probabilities for in-article OOV words
     # the maximum (over the batch) size of the extended vocabulary
@@ -40,6 +41,7 @@ def calc_final_dist(_enc_batch_extend_vocab, vocab_dists, attn_dists, p_gens, ba
     # final_dists is a list length max_dec_steps; each entry is a tensor shape (batch_size, extended_size) giving
     # the final distribution for that decoder timestep
     # Note that for decoder timesteps and examples corresponding to a [PAD] token, this is junk - ignore.
-    final_dists = [vocab_dist + copy_dist for (vocab_dist, copy_dist) in zip(vocab_dists_extended, attn_dists_projected)]
+    final_dists = [vocab_dist + copy_dist for (vocab_dist, copy_dist) in
+                   zip(vocab_dists_extended, attn_dists_projected)]
 
     return final_dists

@@ -4,12 +4,11 @@ from src.pgn_transformer_tf2.train_helper import train_model
 from src.pgn_transformer_tf2.test_helper import beam_decode, greedy_decode
 from tqdm import tqdm
 import pandas as pd
-# from rouge import Rouge
-import pprint
-import numpy as np
+from rouge import Rouge
+import os, json
 
 from src.pgn_tf2.batcher import batcher
-from src.utils.config import test_data_path
+from src.utils.config import test_data_path, test_seg_path
 from src.utils.file_utils import get_result_filename
 from src.utils.wv_loader import Vocab
 
@@ -48,14 +47,14 @@ def test(params):
     assert params["mode"].lower() == "test", "change training mode to 'test' or 'eval'"
     # assert params["beam_size"] == params["batch_size"], "Beam size must be equal to batch_size, change the params"
 
-    print("Building the model ...")
-    model = PGN_TRANSFORMER(params)
-
-    print("Creating the vocab ...")
     vocab = Vocab(params["vocab_path"], params["vocab_size"])
+    params['vocab_size'] = vocab.count
 
     print("Creating the batcher ...")
     dataset, params['steps_per_epoch'] = batcher(vocab, params)
+
+    print("Building the model ...")
+    model = PGN_TRANSFORMER(params)
 
     print("Creating the checkpoint manager")
     ckpt = tf.train.Checkpoint(PGN_TRANSFORMER=model)
@@ -80,31 +79,31 @@ def test_and_save(params):
         results = next(gen)
     else:
         results = []
-        with tqdm(total=params["num_to_test"], position=0, leave=True) as pbar:
-            for i in range(params["num_to_test"]):
+        with tqdm(total=params['steps_per_epoch'], position=0, leave=True) as pbar:
+            for i in range(params['steps_per_epoch']):
                 trial = next(gen)
                 results.append(trial.abstract)
                 pbar.update(1)
+
+    get_rouge(results)
     return results
+
+
+def get_rouge(results):
+    # 读取结果
+    seg_test_report = pd.read_csv(test_seg_path, header=None).iloc[:len(results), 5].tolist()
+    seg_test_report = [' '.join(str(token) for token in str(line).split()) for line in seg_test_report]
+    rouge_scores = Rouge().get_scores(results, seg_test_report, avg=True)
+    print_rouge = json.dumps(rouge_scores, indent=2)
+    with open(os.path.join(os.path.dirname(test_seg_path), 'results.csv'), 'w', encoding='utf8') as f:
+        json.dump(list(zip(results, seg_test_report)), f, indent=2, ensure_ascii=False)
+    print('*' * 8 + ' rouge score ' + '*' * 8)
+    print(print_rouge)
 
 
 def predict_result(params):
     # 预测结果
-    results = test_and_save(params)
-    # 保存结果
-    save_predict_result(results, params)
-
-
-def save_predict_result(results, params):
-    # 读取结果
-    test_df = pd.read_csv(test_data_path)
-    # 填充结果
-    test_df['Prediction'] = results[:20000]
-    # 　提取ID和预测结果两列
-    test_df = test_df[['QID', 'Prediction']]
-    # 保存结果.
-    result_save_path = get_result_filename(params)
-    test_df.to_csv(result_save_path, index=None, sep=',')
+    test_and_save(params)
 
 
 if __name__ == '__main__':

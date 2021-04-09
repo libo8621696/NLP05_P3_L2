@@ -6,7 +6,7 @@ from src.pgn_tf2.model import PGN
 from tqdm import tqdm
 import pandas as pd
 from src.pgn_tf2.predict_helper import beam_decode, greedy_decode
-from src.utils.config import checkpoint_dir, test_data_path, test_seg_path
+from src.utils.config import pgn_checkpoint_dir, test_data_path, test_seg_path
 from src.utils.gpu_utils import config_gpu
 from src.utils.wv_loader import Vocab
 from src.utils.params_utils import get_params
@@ -19,7 +19,7 @@ def test(params):
     if params['decode_mode'] == 'beam':
         assert params["beam_size"] == params["batch_size"], "Beam size must be equal to batch_size, change the params"
     # GPU资源配置
-    config_gpu(use_cpu=True)
+    config_gpu()
 
     print("Building the model ...")
     model = PGN(params)
@@ -30,7 +30,7 @@ def test(params):
 
     print("Creating the checkpoint manager")
     checkpoint = tf.train.Checkpoint(PGN=model)
-    checkpoint_manager = tf.train.CheckpointManager(checkpoint, checkpoint_dir, max_to_keep=5)
+    checkpoint_manager = tf.train.CheckpointManager(checkpoint, pgn_checkpoint_dir, max_to_keep=5)
     checkpoint.restore(checkpoint_manager.latest_checkpoint)
     if checkpoint_manager.latest_checkpoint:
         print("Restored from {}".format(checkpoint_manager.latest_checkpoint))
@@ -39,13 +39,14 @@ def test(params):
     print("Model restored")
 
     results = predict_result(model, params, vocab, params['result_save_path'])
-    print('save result to :{}'.format(params['result_save_path']))
-    print('save result :{}'.format(results[:5]))
+    # print('save result to :{}'.format(params['result_save_path']))
+    # print('save result :{}'.format(results[:5]))
 
 
 def get_rouge(results):
     # 读取结果
-    seg_test_report = pd.read_csv(test_seg_path).iloc[:, 5].tolist()
+    seg_test_report = pd.read_csv(test_seg_path, header=None).iloc[:len(results), 5].tolist()
+    seg_test_report = [' '.join(str(token) for token in str(line).split()) for line in seg_test_report]
     rouge_scores = Rouge().get_scores(results, seg_test_report, avg=True)
     print_rouge = json.dumps(rouge_scores, indent=2)
     print('*' * 8 + ' rouge score ' + '*' * 8)
@@ -53,11 +54,11 @@ def get_rouge(results):
 
 
 def predict_result(model, params, vocab, result_save_path):
-    dataset, _ = batcher(vocab, params)
+    dataset, params['steps_per_epoch'] = batcher(vocab, params)
 
     if params['decode_mode'] == 'beam':
         results = []
-        for batch in tqdm(dataset):
+        for batch in tqdm(dataset, total=params['steps_per_epoch']):
             best_hyp = beam_decode(model, batch, vocab, params, print_info=True)
             results.append(best_hyp.abstract)
     else:
@@ -67,7 +68,7 @@ def predict_result(model, params, vocab, result_save_path):
     # 保存结果
     if not os.path.exists(os.path.dirname(result_save_path)):
         os.makedirs(os.path.dirname(result_save_path))
-    save_predict_result(results, result_save_path)
+    # save_predict_result(results, result_save_path)
 
     return results
 
@@ -86,7 +87,6 @@ def save_predict_result(results, result_save_path):
 if __name__ == '__main__':
     import os
 
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
     # 获得参数
     params = get_params()
 
@@ -99,8 +99,10 @@ if __name__ == '__main__':
     params['use_coverage'] = False
     params['enc_units'] = 128
     params['dec_units'] = 256
-    params['attn_units'] = 20
+    params['attn_units'] = 128
     params['min_dec_steps'] = 3
+    params['max_enc_len'] = 200
+    params['max_dec_len'] = 40
 
     # greedy search
     # params['batch_size'] = 8

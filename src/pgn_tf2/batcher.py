@@ -114,7 +114,7 @@ def example_generator(params, vocab, max_enc_len, max_dec_len, mode, batch_size)
         dataset_2 = tf.data.TextLineDataset(params[f"{mode}_seg_y_dir"])
         train_dataset = tf.data.Dataset.zip((dataset_1, dataset_2))
 
-        # train_dataset = train_dataset.shuffle(10, reshuffle_each_iteration=True).repeat()
+        train_dataset = train_dataset.shuffle(10, reshuffle_each_iteration=True).repeat()
         for raw_record in train_dataset:
             article = raw_record[0].numpy().decode("utf-8")
 
@@ -168,8 +168,8 @@ def example_generator(params, vocab, max_enc_len, max_dec_len, mode, batch_size)
             }
             yield output
     else:
-        train_dataset = tf.data.TextLineDataset(params["val_seg_x_dir"])
-        for raw_record in train_dataset:
+        test_dataset = tf.data.TextLineDataset(params["val_seg_x_dir"])
+        for raw_record in test_dataset:
             article = raw_record.numpy().decode("utf-8")
             article_words = article.split()[:max_enc_len]
             enc_len = len(article_words)
@@ -290,7 +290,10 @@ def get_steps_per_epoch(params):
         file = open(params["test_seg_x_dir"])
     else:
         file = open(params["val_seg_x_dir"])
-    steps_per_epoch = math.ceil(len(file.readlines()) // params['batch_size'])
+    num_examples = len(file.readlines())
+    if params['decode_mode'] == 'beam':
+        return num_examples
+    steps_per_epoch = math.ceil(num_examples // params['batch_size'])
     return steps_per_epoch
 
 

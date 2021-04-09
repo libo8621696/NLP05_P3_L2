@@ -19,7 +19,7 @@ class PGN(tf.keras.Model):
                                params["enc_units"],
                                params["batch_size"])
 
-        self.attention = BahdanauAttention(params["attn_units"])
+        # self.attention = BahdanauAttention(params["attn_units"])
 
         self.decoder = Decoder(self.embedding_matrix,
                                params["dec_units"],
