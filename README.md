@@ -24,8 +24,19 @@
 代码填充部分：
 代码填充主要集中在src\seq2seq_tf2文件夹中的model_layers.py和seq2seq_model.py中，然而，由于load_dataset.py不存在，填充之后的代码没有办法跑起来，填充部分参见github中提交的model_layers.py和seq2seq_model.py文件
 
+现在简短地在README.md文件中介绍一下我填充的代码，看看我的问题到底出在哪里
 
-    
+1. 在seq2seq_tf2文件夹中，在model_layers.py中填充了以下代码：
+　+ 在Encoder类代码的初始化列表中加入了代码如下图所示：
+    ![Encoder初始化列表中加入代码](./Encoder填充部分.png)
+    + 在BahdanauAttention类的call函数中加入代码如下图所示：
+    ![BahdanauAttention添加代码](./BahdanauAttention填充部分.png)
+    + 在Decoder类代码的初始化列表中加入了如下图所示的内容：
+    ![Decoder初始化列表中加入代码](./Decoder填充部分.png)
+   
+ 2.同样在seq2seq_tf2文件夹中，在seq2seq_models.py中填充了以下代码：
+   + 在teacher_decoder函数的循环过程中加入了预测生成词语概率分布的代码如下图所示：
+   ![添加teacher-forcing代码可能有问题](./teacher_decoder部分可能填代码有问题.png)
     
 训练步骤:
 1. 拷贝数据集到data路径下
