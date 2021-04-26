@@ -22,7 +22,7 @@
     ....
 
 代码填充部分：
-代码填充主要集中在src\seq2seq_tf2文件夹中的model_layers.py和seq2seq_model.py中，然而，由于data_loader.py不存在，填充之后的代码没有办法跑起来，填充部分参见github中提交的model_layers.py和seq2seq_model.py文件
+代码填充主要集中在src\seq2seq_tf2文件夹中的model_layers.py和seq2seq_model.py中，然而，由于load_dataset.py不存在，填充之后的代码没有办法跑起来，填充部分参见github中提交的model_layers.py和seq2seq_model.py文件
 
 
     
@@ -33,8 +33,8 @@
 ![data路径下数据是完整的](./data数据完整性.png)
 2. 运行utils\data_loader.py可以一键完成 预处理数据 构建数据集
 
-+　但是，在训练过程中出现找不到data_loader.py的问题
-![找不到data_loader.py](./无法找到dataloader.png)
++　但是，在训练过程中出现找不到load_dataset.py的问题
+![找不到load_dataset.py](./无法找到dataloader.png)
 
 + 由于utils\data_loader.py不存在，尝试使用utils\wv_loader.py进行处理，
 ![运行wv_loader.py结果](./运行wv_loader.png)
