@@ -27,10 +27,13 @@
 现在简短地在README.md文件中介绍一下我填充的代码，看看我的问题到底出在哪里
 
 1. 在seq2seq_tf2文件夹中，在model_layers.py中填充了以下代码：
+
 　+ 在Encoder类代码的初始化列表中加入了代码如下图所示：
     ![Encoder初始化列表中加入代码](./Encoder填充部分.png)
+    
     + 在BahdanauAttention类的call函数中加入代码如下图所示：
     ![BahdanauAttention添加代码](./BahdanauAttention填充部分.png)
+    
     + 在Decoder类代码的初始化列表中加入了如下图所示的内容：
     ![Decoder初始化列表中加入代码](./Decoder填充部分.png)
    
