@@ -36,6 +36,6 @@
 +　但是，在训练过程中出现找不到load_dataset.py的问题，通过在build_data文件夹中找到了load_dataset函数，需要在seq2seq_tf2中的seq2seq_batcher.py中加入from src.build_data.utils import load_dataset
 但是运行之后发现矩阵维数仍然对不上，无法进行下一步的计算，如下图所示。
 
-
+![矩阵维数不对应](./训练过程中矩阵维数不一致.png)
 + 由于utils\data_loader.py不存在，尝试使用utils\wv_loader.py进行处理，
 ![运行wv_loader.py结果](./运行wv_loader.png)
