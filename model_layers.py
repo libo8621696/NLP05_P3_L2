@@ -19,7 +19,7 @@ class Encoder(tf.keras.Model):
         定义Embedding层，加载预训练的词向量
         请写出你的代码
         """
-        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
+        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim,weights=[embedding_matrix], trainable=False)
         # tf.keras.layers.GRU自动匹配cpu、gpu
         """
         定义单向的RNN、GRU、LSTM层
@@ -96,7 +96,7 @@ class Decoder(tf.keras.Model):
         定义Embedding层，加载预训练的词向量
         请写出你的代码
         """
-        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim)
+        self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim, weights=[embedding_matrix], trainable=False)
         """
         定义单向的RNN、GRU、LSTM层
         请写出你的代码
@@ -109,7 +109,7 @@ class Decoder(tf.keras.Model):
         定义最后的fc层，用于预测词的概率
         请写出你的代码
         """
-        self.fc = tf.keras.layers.Dense(self.dec_units, activation='tanh')
+        self.fc = tf.keras.layers.Dense(vocab_size)
         """
         注意力机制
         请写出你的代码
