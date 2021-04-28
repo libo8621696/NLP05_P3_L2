@@ -61,3 +61,25 @@
 + 由于utils\data_loader.py不存在，尝试使用utils\wv_loader.py进行处理
 
 ![运行wv_loader.py结果](./运行wv_loader.png)
+
+
+修改方法：
+1. 在model_layers.py中的Encoder类和Decoder类的代码部分关于embedding的参数少写了weights的参数设置
+　　self.embedding = tf.keras.layers.Embedding(vocab_size, embedding_dim,weights=[embedding_matrix], trainable=False)
+  主要修改内容如下图所示：
+  
+  ![Encoder修改部分](./Encoder改正部分.png)
+  
+  
+   ![Decoder修改部分](./Encoder改正部分.png)
+    
+2. 同样在model_layers.py中的Decoder类中最后的全连接层中的参数应该为整个词汇表的大小vocab_size，这个地方之前设置错了
+　　 self.fc = tf.keras.layers.Dense(vocab_size)
+   
+   ![修改fc层参数](./teacher_decoder改正部分.png)
+
+经过以上的修改，最终模型可以跑通，经过10个Epoch训练之后，最终的损失函数下降为Epoch 10 Loss 1.4808; val Loss 1.9193
+如下图所示，然而每个Epoch的损失函数下降幅度并不大，并且val loss还有增加的趋势，有可能是结果产生了过拟合，数据过少。
+
+
+
